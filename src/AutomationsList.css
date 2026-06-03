@@ -1,0 +1,43 @@
+.automations-list {
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.automations-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.automation-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.auto-title {
+  flex-grow: 1;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.auto-time {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.icon-orange {
+  color: var(--accent-orange);
+}
+
+.icon-green {
+  color: var(--accent-green);
+}
