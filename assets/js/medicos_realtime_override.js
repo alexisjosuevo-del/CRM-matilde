@@ -1,9 +1,9 @@
-
-// medicos_realtime_override.js — Lista de médicos 100% en tiempo real desde Firestore
+﻿
+// medicos_realtime_override.js â€” Lista de mÃ©dicos 100% en tiempo real desde Firestore
 // Sobrescribe initMedicos/applyMedFilters/render usando la misma API global del index.
 
 (function(){
-  // Esperar a que el DOM y las funciones del index estén listas
+  // Esperar a que el DOM y las funciones del index estÃ©n listas
   function ready(fn){ if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
   ready(init);
 
@@ -12,7 +12,7 @@
       // Esperar a que firebase_init.js ya haya creado la app
       let attempts = 0;
       while (!window.firebaseApp || !window.firebaseDb) {
-        if (++attempts > 40) throw new Error('Firebase no inicializó en tiempo');
+        if (++attempts > 40) throw new Error('Firebase no inicializÃ³ en tiempo');
         await new Promise(r => setTimeout(r, 250));
       }
       const fsMod = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js");
@@ -24,19 +24,19 @@
       const tbMed = document.querySelector('#tableMedicos tbody');
       const badge = document.getElementById('medCount');
 
-      // Función para homologar nombres de KAMs con diferentes escrituras
+      // FunciÃ³n para homologar nombres de KAMs con diferentes escrituras
       window.normalizeKAM = function(kamRaw) {
         if (!kamRaw) return '';
-        // Limpiar espacios invisibles y múltiples espacios
+        // Limpiar espacios invisibles y mÃºltiples espacios
         let cleanKam = kamRaw.replace(/\s+/g, ' ').trim();
         const lower = cleanKam.toLowerCase();
         
-        if (lower.includes('america') || lower.includes('américa')) return 'AMÉRICA GÓMEZ';
+        if (lower.includes('america') || lower.includes('amÃ©rica')) return 'AMÃ‰RICA GÃ“MEZ';
         if (lower.includes('berenice')) return 'BERENICE ORDAZ';
         if (lower.includes('dayan')) return 'DAYANA'; // atrapa dayan y dayana
-        if (lower.includes('alain')) return 'DR. ALAIN RAMÍREZ';
+        if (lower.includes('alain')) return 'DR. ALAIN RAMÃREZ';
         if (lower.includes('anayely') || lower.includes('anayeli')) return 'ANAYELY TAPIA';
-        if (lower.includes('raymundo')) return 'RAYMUNDO ACUÑA';
+        if (lower.includes('raymundo')) return 'RAYMUNDO ACUÃ‘A';
         if (lower.includes('alexis')) return 'ALEXIS';
         if (lower.includes('leonel')) return 'LEONEL CASTILLEJOS';
         if (lower.includes('manuel')) return 'MANUEL AGUIRRE';
@@ -45,13 +45,13 @@
         if (lower.includes('david')) return 'DAVID SANTIAGO';
         if (lower.includes('oscar')) return 'OSCAR RANGEL';
         if (lower.includes('marymar')) return 'MARYMAR';
-        if (lower.includes('efrain') || lower.includes('efraín')) return 'EFRAIN';
+        if (lower.includes('efrain') || lower.includes('efraÃ­n')) return 'EFRAIN';
         
-        // Si no coincide con las reglas principales, lo retorna en mayúsculas limpiando espacios
+        // Si no coincide con las reglas principales, lo retorna en mayÃºsculas limpiando espacios
         return cleanKam.toUpperCase();
       };
 
-      // Función para normalizar cada doc -> fila compatible con el render del index
+      // FunciÃ³n para normalizar cada doc -> fila compatible con el render del index
       
       function adapt(doc){
         // doc is a QueryDocumentSnapshot
@@ -60,14 +60,14 @@
           id: doc.id || r.id || '',
           // nombres de columnas para UI anterior (compatibilidad)
           'Nombre': r.Nombre || r.nombre || r.name || '',
-          'Teléfono': r.Teléfono || r.telefono || r.tel || '',
-          'Dirección': r.Dirección || r.Direccion || r.direccion || '',
+          'TelÃ©fono': r.TelÃ©fono || r.telefono || r.tel || '',
+          'DirecciÃ³n': r.DirecciÃ³n || r.Direccion || r.direccion || '',
           'Hospital': r.Hospital || r.hospital || '',
           'Red Social': r['Red Social'] || r.redSocial || r.red || '',
           'Especialidad': r.Especialidad || r.especialidad || '',
           'Base': r.Base || r.base || '',
           'Estado': r.Estado || r.estado || '',
-          'Región': r.Región || r.Region || r.region || '',
+          'RegiÃ³n': r.RegiÃ³n || r.Region || r.region || '',
           'GERENTE/KAM': window.normalizeKAM(r['GERENTE/KAM'] || r.KAM || r.kam || ''),
           createdAt: r.createdAt || null,
           updatedAt: r.updatedAt || r.lastUpdatedAt || null
@@ -77,9 +77,9 @@
       // Sobrescribir initMedicos para que use Firestore en tiempo real
       window.initMedicos = function(){
         // Limpia UI mientras llega el primer snapshot
-        if (tbMed) tbMed.innerHTML = '<tr><td colspan="6" class="text-muted text-center" style="padding: 40px">Cargando desde Firestore…</td></tr>';
+        if (tbMed) tbMed.innerHTML = '<tr><td colspan="6" class="text-muted text-center" style="padding: 40px">Cargando desde Firestoreâ€¦</td></tr>';
         
-        // 🚀 Suscripción global a seguimientos para el Kanban y KPIs (CollectionGroup)
+        // ðŸš€ SuscripciÃ³n global a seguimientos para el Kanban y KPIs (CollectionGroup)
         try {
           const segQ = fsMod.query(fsMod.collectionGroup(db, "seguimientos"));
           fsMod.onSnapshot(segQ, (snap) => {
@@ -104,11 +104,11 @@
             if (window.initDashboard) window.initDashboard(); // Actualizar dashboard
           });
         } catch(e) {
-          console.warn('CollectionGroup seguimientos falló (posible index o regla):', e);
+          console.warn('CollectionGroup seguimientos fallÃ³ (posible index o regla):', e);
         }
 
-        // Suscripción en tiempo real a médicos
-        const q = fsMod.query(fsMod.collection(db, "medicos"));
+        // SuscripciÃ³n en tiempo real a mÃ©dicos
+        const q = fsMod.query(fsMod.collection(db, "clientes"));
         fsMod.onSnapshot(q, (snap)=>{
           // Construye la base global para filtros/exports
           window.MED_BASE = snap.docs.map(doc => adapt(doc));
@@ -120,17 +120,17 @@
             return order==='asc' ? (ta - tb) : (tb - ta);
           });
           // Actualiza badge
-          if (badge) badge.textContent = (window.MED_BASE.length || 0) + ' médicos';
+          if (badge) badge.textContent = (window.MED_BASE.length || 0) + ' mÃ©dicos';
 
-          // Hidratar filtros (Estado, Región, KAM) desde Firestore
+          // Hidratar filtros (Estado, RegiÃ³n, KAM) desde Firestore
           try {
             const distinct = (arr) => Array.from(new Set(arr.filter(Boolean))).sort((a,b)=>(''+a).localeCompare((''+b),'es',{sensitivity:'base'}));
             const estados = distinct(window.MED_BASE.map(r=> r.Estado || r.estado || ''));
-            const regiones= distinct(window.MED_BASE.map(r=> r.Región || r.Region || r.region || ''));
+            const regiones= distinct(window.MED_BASE.map(r=> r.RegiÃ³n || r.Region || r.region || ''));
             const HIDDEN_KAMS = new Set([
-              'ALEXIS', 'AMÉRICA GÓMEZ', 'AMERICA GOMEZ', 'EFRAIN',
+              'ALEXIS', 'AMÃ‰RICA GÃ“MEZ', 'AMERICA GOMEZ', 'EFRAIN',
               'JOAN SERRANO', 'KAM@EMPRESA.COM', 'LEONEL CASTILLEJOS',
-              'MANUEL AGUIRRE', 'MONICA', 'MÓNICA', 'RAYMUNDO ACUÑA'
+              'MANUEL AGUIRRE', 'MONICA', 'MÃ“NICA', 'RAYMUNDO ACUÃ‘A'
             ]);
             const kams    = distinct(window.MED_BASE.map(r => r['GERENTE/KAM'] || r.KAM || r.kam || ''))
                               .filter(k => !HIDDEN_KAMS.has(k.toUpperCase()));
@@ -144,7 +144,7 @@
             }
             if (fRegion) {
               const sel = fRegion.value || '';
-              fRegion.innerHTML = '<option value="">Región (todas)</option>' + regiones.map(v=>`<option>${v}</option>`).join('');
+              fRegion.innerHTML = '<option value="">RegiÃ³n (todas)</option>' + regiones.map(v=>`<option>${v}</option>`).join('');
               if (sel) fRegion.value = sel;
             }
             if (fKam) {
@@ -155,7 +155,7 @@
           } catch(_) {}
 
           // Reaplica filtros y render
-          // También exponemos una API de render y filtros robusta (override)
+          // TambiÃ©n exponemos una API de render y filtros robusta (override)
           window.applyMedFilters = function(){
             const $ = (s)=>document.querySelector(s);
             const qMed = $('#qMed'), fEstado=$('#fEstado'), fRegion=$('#fRegion'), fKam=$('#fKam');
@@ -163,15 +163,15 @@
             const q = norm(qMed?.value||'');
             let base = Array.isArray(window.MED_BASE) ? window.MED_BASE.slice() : [];
             if(q){
-              base = base.filter(r => [r['Nombre'], r['Teléfono'], r['Dirección'], r['Hospital'],
-                r['Red Social'], r['Especialidad'], r['Base'], r['Estado'], r['Región'], r['GERENTE/KAM']]
+              base = base.filter(r => [r['Nombre'], r['TelÃ©fono'], r['DirecciÃ³n'], r['Hospital'],
+                r['Red Social'], r['Especialidad'], r['Base'], r['Estado'], r['RegiÃ³n'], r['GERENTE/KAM']]
                 .some(v => norm(v).includes(q)));
             }
             const est = (fEstado?.value||'').trim();
             const reg = (fRegion?.value||'').trim();
             const kam = (fKam?.value||'').trim();
             if(est) base = base.filter(r => String(r['Estado']||'')===est);
-            if(reg) base = base.filter(r => String(r['Región']||'')===reg);
+            if(reg) base = base.filter(r => String(r['RegiÃ³n']||'')===reg);
             if(kam) base = base.filter(r => String(r['GERENTE/KAM']||'')===kam);
             window.MED_FILT = base;
             if(typeof window.renderMedicos==='function') window.renderMedicos();
@@ -192,39 +192,36 @@
             window.medPage = Math.min(window.medPage||1, pages);
             const start = (window.medPage-1)*size; const slice = arr.slice(start, start+size);
             if(tbMed){
-              tbMed.innerHTML = slice.map(r=>{
+                            tbMed.innerHTML = slice.map(r=>{
                 const id = r.id || '';
                 const nombre = r['Nombre']||r.nombre||'—';
-                const initial = nombre.replace(/Dr\.\s*|Dra\.\s*/ig, '').charAt(0).toUpperCase() || 'M';
-                const dir = r['Dirección']||r.direccion||'—';
+                const empresa = r['Empresa']||r.empresa||'—';
+                const rol = r['Rol']||r.rol||'—';
+                const initial = nombre.charAt(0).toUpperCase() || 'C';
                 return `<tr>
                   <td>
                     <div class="name-cell">
                       <div class="avatar">${initial}</div>
                       <div>
                         <div class="font-semibold">${nombre}</div>
-                        <div class="text-xs text-muted">${r.Base || r.base || 'Sin base'}</div>
+                        <div class="text-xs text-muted">${r['Base'] || r.base || 'Sin base'}</div>
                       </div>
                     </div>
                   </td>
                   <td>
-                    <div class="font-semibold">${r['Teléfono'] || r.telefono || r.tel || '—'}</div>
-                    <div class="text-xs text-muted truncate" style="max-width:150px" title="${dir}">${dir}</div>
+                    <div class="font-semibold">${empresa}</div>
+                    <div class="text-xs text-muted">${rol}</div>
                   </td>
                   <td>
-                    <div class="font-semibold truncate" style="max-width:200px" title="${r.Hospital || r.hospital || ''}">${r.Hospital || r.hospital || '—'}</div>
-                    <div class="text-xs text-muted">${r.Especialidad || r.especialidad || '—'}</div>
+                    <div class="font-semibold">${r['Telefono'] || r.telefono || '—'}</div>
+                    <div class="text-xs text-muted truncate" style="max-width:150px">${r['Red Social'] || r.redSocial || '—'}</div>
                   </td>
                   <td>
-                    <div class="font-semibold">${r.Estado || r.estado || '—'}</div>
-                    <div class="text-xs text-muted">${r.Región || r.Region || r.region || '—'}</div>
-                  </td>
-                  <td>
-                    <div class="font-semibold">${r['GERENTE/KAM'] || r.kam || '—'}</div>
+                    <div class="font-semibold">${r['Estado'] || r.estado || '—'}</div>
+                    <div class="text-xs text-muted">${r['Region'] || r.region || '—'}</div>
                   </td>
                   <td class="action-cell">
-                    <button class="btn btn-ghost btn-sm btn-followup btn-seg" data-id="${id}" data-nombre="${nombre}">+ Seg.</button>
-                    <button class="btn btn-ghost btn-sm btn-pubmed" data-nombre="${nombre}" title="Análisis PubMed" style="color: var(--blue-light);">🧬</button>
+                    <button class="btn btn-ghost btn-sm btn-followup btn-seg" data-id="${id}" data-nombre="${nombre}">Seguimiento</button>
                   </td>
                 </tr>`;
               }).join('');
@@ -241,9 +238,9 @@
                 try{ window.openPubMedModal?.(nombre); }catch(_){}
               }));
             }
-            if(pageInfo) pageInfo.textContent = `Mostrando ${slice.length} de ${total} — Página ${window.medPage}/${pages}`;
+            if(pageInfo) pageInfo.textContent = `Mostrando ${slice.length} de ${total} â€” PÃ¡gina ${window.medPage}/${pages}`;
             
-            // 🚀 Actualizar Dashboard KPIs y Kanban
+            // ðŸš€ Actualizar Dashboard KPIs y Kanban
             if (window.initDashboard) window.initDashboard();
           };
 
@@ -263,12 +260,12 @@
               return data.map(r => ({
                 'Nombre': r['Nombre'] || r.nombre || '',
                 'Base': r['Base'] || r.base || '',
-                'Teléfono': r['Teléfono'] || r.telefono || r.tel || '',
-                'Dirección': r['Dirección'] || r.direccion || '',
+                'TelÃ©fono': r['TelÃ©fono'] || r.telefono || r.tel || '',
+                'DirecciÃ³n': r['DirecciÃ³n'] || r.direccion || '',
                 'Hospital': r['Hospital'] || r.hospital || '',
                 'Especialidad': r['Especialidad'] || r.especialidad || '',
                 'Estado': r['Estado'] || r.estado || '',
-                'Región': r['Región'] || r.Region || r.region || '',
+                'RegiÃ³n': r['RegiÃ³n'] || r.Region || r.region || '',
                 'KAM': r['GERENTE/KAM'] || r.kam || ''
               }));
             };
@@ -285,12 +282,12 @@
             });
             
             document.querySelector('#downloadMedXLSX')?.addEventListener('click', () => {
-              if (typeof XLSX === 'undefined') { alert('Librería XLSX no cargada'); return; }
+              if (typeof XLSX === 'undefined') { alert('LibrerÃ­a XLSX no cargada'); return; }
               const data = getExportData();
               if(!data.length) { alert('No hay datos para exportar.'); return; }
               const ws = XLSX.utils.json_to_sheet(data);
               const wb = XLSX.utils.book_new();
-              XLSX.utils.book_append_sheet(wb, ws, "Médicos");
+              XLSX.utils.book_append_sheet(wb, ws, "MÃ©dicos");
               XLSX.writeFile(wb, "directorio_medicos.xlsx");
             });
             
@@ -307,9 +304,9 @@ if (typeof window.applyMedFilters === 'function'){
         });
       };
 
-      // Fuerza lectura desde servidor (para el botón "Refrescar")
+      // Fuerza lectura desde servidor (para el botÃ³n "Refrescar")
       window.forceMedicosFromServer = async function(){
-        const col = fsMod.collection(db, "medicos");
+        const col = fsMod.collection(db, "clientes");
         const snap = await fsMod.getDocs(col);
         window.MED_BASE = snap.docs.map(doc => adapt(doc));
           const sortSel = document.querySelector('#sortOrder');
@@ -319,7 +316,7 @@ if (typeof window.applyMedFilters === 'function'){
             const tb = (b.createdAt && b.createdAt.toDate) ? b.createdAt.toDate().getTime() : (b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0);
             return order==='asc' ? (ta - tb) : (tb - ta);
           });
-        if (badge) badge.textContent = (window.MED_BASE.length || 0) + ' médicos';
+        if (badge) badge.textContent = (window.MED_BASE.length || 0) + ' mÃ©dicos';
         const _sortSel = document.querySelector('#sortOrder'); if(_sortSel){ _sortSel.addEventListener('change', ()=>{ try{ window.renderMedicos(); }catch(_){}}); }
 if (typeof window.applyMedFilters === 'function'){
           try { window.applyMedFilters(); } catch(_){}
@@ -328,7 +325,7 @@ if (typeof window.applyMedFilters === 'function'){
         }
       };
 
-      // Siempre iniciamos la escucha de médicos y seguimientos al cargar
+      // Siempre iniciamos la escucha de mÃ©dicos y seguimientos al cargar
       if (typeof window.initMedicos === 'function') {
         window.initMedicos();
       }
@@ -337,3 +334,6 @@ if (typeof window.applyMedFilters === 'function'){
     }
   }
 })();
+
+
+
